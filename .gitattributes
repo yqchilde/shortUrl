@@ -1,2 +1,2 @@
 *.go linguist-language=go
-*.md linguist-language=go
+*.html linguist-language=go
