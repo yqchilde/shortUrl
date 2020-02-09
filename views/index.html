@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <title>t.cn短网址服务</title>
+        <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+        <style>
+            html, body {
+            height: 100%;
+            background:linear-gradient(to top, #ff758c 0%,#ff7eb3 100%);
+            overflow: auto;
+            font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+        }
+        .title {
+            color: aliceblue;
+            font-size: 36px;
+            margin-top: 20px;
+        }
+        .msg-box {
+            width: 75%;
+            height: 450px;
+            background-color: #FFFFFF;
+            margin: 50px auto;
+            padding: 30px 30px 15px 30px;
+            border-radius: 3px;
+            box-shadow:-5px 5px 10px -4px #e64386,5px 5px 10px -4px #e64386;
+        }
+        .btn_ok {
+            margin-top: 20px;
+        }
+        .badges {
+            margin-top: 15px;
+        }
+    </style>
+    </head>
+    <body>
+
+        <div id="app">
+            <div class="title" align="center">
+                t.cn 短网址服务
+            </div>
+            <div class="badges" align="center">
+                <a href="https://www.yqqy.top" target="_blank"><img src="https://pic.yqqy.top/blog/badges_blog.svg"></a>
+                <a href="https://www.yqqy.top" target="_blank"><img src="https://pic.yqqy.top/blog/badges_git_shortUrl.svg"></a>
+                
+            </div>
+
+            <div class="msg-box">
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <el-tab-pane name="first">
+                        <span slot="label"><i class="el-icon-edit"></i> 短网址生成</span>
+                        <el-input type="textarea" :rows="15" placeholder="如果需要批量生成请自行换行输入" resize="none" v-model="shortUrl">
+                        </el-input>
+                    </el-tab-pane name="second">
+                    <el-tab-pane>
+                        <span slot="label"><i class="el-icon-loading"></i> 短网址还原</span>
+                        暂未开发
+                    </el-tab-pane>
+                    <el-button size="small" type="primary" :loading=isLoading class="btn_ok" @click="makeUrl">
+                        <i v-show="isBtnIconShow" class="el-icon-mouse"></i>
+                        生成
+                    </el-button>
+                </el-tabs>
+            </div>
+
+        </div>
+
+        <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+        <script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+        <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+        <script type="text/javascript">
+            var app = new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        activeName: 'first',
+                        isLoading: false,
+                        isBtnIconShow: true,
+                        shortUrl: ""
+                    }
+                },
+                methods: {
+                    handleClick(tab, event) {
+                        console.log(tab, event);
+                    },
+                    makeUrl(e) {
+                        if (this.shortUrl == "") {
+                            this.$message.error('内容呢？');
+                            return;
+                        }
+
+                        // 处理脏数据
+                        arr = this.shortUrl.split("\n")
+                        for (let i = 0; i < arr.length; i++) {
+                            let reg =
+                                /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/[#]?((\.)?(\?)?=?&?[a-zA-Z0-9_%-](\?)?)*)*$/;
+                            if (!reg.test(arr[i])) {
+                                this.$message.error('第' + (i + 1) + '行格式不正确，需要携带http(s)://头');
+                                return;
+                            }
+                        }
+
+                        // 提交服务端
+                        this.isLoading = true;
+                        this.isBtnIconShow = false;
+
+                        axios.post(`api/shortUrl`, {
+                                url: this.shortUrl
+                            })
+                            .then(res => {
+                                res = res.data;
+                                if (res.code == 200) {
+                                    this.$message({
+                                        message: "生成成功，请稍等复制",
+                                        type: "success"
+                                    });
+
+                                    this.shortUrl = ""
+                                    for (let i = 0; i < res.data.length; i++) {
+                                        this.shortUrl += res.data[i].trim() + "\n";
+                                    }
+                                    this.isLoading = false;
+                                    this.isBtnIconShow = true;
+                                } else {
+                                    this.$message.error(res.data);
+                                }
+                            })
+                            .catch(function(error) {
+                                console.log(error);
+                            });
+                    }
+                }
+            })
+        </script>
+
+    </body>
+</html>
