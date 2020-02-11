@@ -25,7 +25,7 @@ func main() {
 		tools.POST("/api/shortUrl", ShortUrl)
 	}
 
-	err := engine.Run(":2021")
+	err := engine.Run(":8080")
 	if err != nil {
 		log.Fatalf("服务器端口启动失败，原因：%s", err)
 		return
