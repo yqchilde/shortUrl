@@ -4,7 +4,7 @@ Go+新浪抓到的接口生成短网址 -> t.cn
 
 [点我查看shortUrl](https://www.yqqy.top/tools/shorturl)
 
-### Run
+### Win Run
 
 ```shell
 // download
@@ -17,3 +17,6 @@ go run main.go
 http://127.0.0.1:8080/tools/shorturl
 ```
 
+### Linux Run
+
+`双击linux_build.bat`，交叉编译需要设置对应的 go env
