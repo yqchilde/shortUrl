@@ -2,7 +2,7 @@ Go+新浪抓到的接口生成短网址 -> t.cn
 
 ### Demo
 
-[点我查看shortUrl](https://www.yqqy.top/tools/shorturl)
+[点我查看shortUrl](https://yqqy.top/tools/shorturl)
 
 ### Win Run
 
